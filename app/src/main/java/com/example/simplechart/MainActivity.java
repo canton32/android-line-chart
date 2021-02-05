@@ -1,15 +1,15 @@
 package com.example.simplechart;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.view.LayoutInflater;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -19,9 +19,9 @@ import github.bandrews568.robinhoodchartclone.TimePeriod;
 import github.bandrews568.robinhoodchartclone.TimePeriodChangeListener;
 
 public class MainActivity extends AppCompatActivity implements TimePeriodChangeListener {
-    RobinhoodChartClone robinhood_chart_clone;
-
+    private RobinhoodChartClone robinhood_chart_clone;
     private Random random = new Random();
+    private Map<TimePeriod, List<DataPoint>> dummyData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +43,22 @@ public class MainActivity extends AppCompatActivity implements TimePeriodChangeL
 
     @Override
     public void timePeriodChange(@NotNull TimePeriod timePeriod) {
-        robinhood_chart_clone.updateDataPoints(getDummyData((timePeriod)));
+        robinhood_chart_clone.updateDataPoints(dummyData.get(timePeriod));
     }
 
     private void generateDummyData() {
+        dummyData.put(TimePeriod.DAY, generateDummyData(TimePeriod.DAY));
+        dummyData.put(TimePeriod.WEEK, generateDummyData(TimePeriod.WEEK));
+        dummyData.put(TimePeriod.MONTH, generateDummyData(TimePeriod.MONTH));
+        dummyData.put(TimePeriod.THREE_MONTH, generateDummyData(TimePeriod.THREE_MONTH));
 
+        List<DataPoint> yearData = generateDummyData(TimePeriod.YEAR);
+        dummyData.put(TimePeriod.YEAR, yearData);
+        dummyData.put(TimePeriod.ALL, yearData);
     }
 
-    private List<DataPoint> getDummyData(TimePeriod timePeriod) {
-        long epochTime = 1612526965L;
+    private List<DataPoint> generateDummyData(TimePeriod timePeriod) {
+        long epochTime = System.currentTimeMillis()/1000;
         long timeIncrease, total;
 
         if (timePeriod == TimePeriod.DAY) {
@@ -60,7 +67,10 @@ public class MainActivity extends AppCompatActivity implements TimePeriodChangeL
         } else if (timePeriod == TimePeriod.WEEK) {
             timeIncrease = TimeUnit.HOURS.toSeconds(4);
             total = 42;
-        } else if (timePeriod == TimePeriod.MONTH || timePeriod == TimePeriod.THREE_MONTH) {
+        } else if (timePeriod == TimePeriod.MONTH) {
+            timeIncrease = TimeUnit.DAYS.toSeconds(3);
+            total = 30;
+        } else if (timePeriod == TimePeriod.THREE_MONTH) {
             timeIncrease = TimeUnit.DAYS.toSeconds(1);
             total = 30;
         } else {
@@ -70,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements TimePeriodChangeL
 
         ArrayList<DataPoint> res = new ArrayList<>();
         for (int i = 0; i < total; i++) {
-            epochTime += timeIncrease;
-            res.add(new DataPoint(15 + random.nextFloat() * 5, epochTime));
+            res.add(0, new DataPoint(15 + random.nextFloat() * 5, epochTime));
+            epochTime -= timeIncrease;
         }
 
         return res;
