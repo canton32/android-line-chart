@@ -68,11 +68,11 @@ public class MainActivity extends AppCompatActivity implements TimePeriodChangeL
             timeIncrease = TimeUnit.HOURS.toSeconds(4);
             total = 42;
         } else if (timePeriod == TimePeriod.MONTH) {
-            timeIncrease = TimeUnit.DAYS.toSeconds(3);
-            total = 30;
-        } else if (timePeriod == TimePeriod.THREE_MONTH) {
             timeIncrease = TimeUnit.DAYS.toSeconds(1);
             total = 30;
+        } else if (timePeriod == TimePeriod.THREE_MONTH) {
+            timeIncrease = TimeUnit.DAYS.toSeconds(2);
+            total = 45;
         } else {
             timeIncrease = TimeUnit.DAYS.toSeconds(7);
             total = 52;
